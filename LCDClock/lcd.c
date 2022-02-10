@@ -7,6 +7,8 @@
 
 #include "avr.h"
 #include "lcd.h"
+#include <stdbool.h>
+#include <string.h>
 
 #define DDR    DDRB
 #define PORT   PORTB
@@ -123,4 +125,100 @@ lcd_puts2(const char *s)
 	while ((c = *(s++)) != 0) {
 		write(c, 1);
 	}
+}
+
+int is_pressed(int r, int c) {
+	
+	DDRC = 0;			// all 8 GPIOs to N/C
+	PORTC = 0;
+	
+	CLR_BIT(PORTC, r);	// set r to "0"
+	SET_BIT(DDRC, r);
+	
+	SET_BIT(PORTC, c+4);		// set c to "w1"
+	CLR_BIT(DDRC, c+4);
+	
+	avr_wait(1);
+	if (!GET_BIT(PINC, c+4)) {
+		return 1;
+	}
+	return 0;
+}
+
+int get_key() {
+	int i,j;
+	for(i = 0; i < 4; ++i) {
+		for(j=0; j < 4; ++j) {
+			if (is_pressed(i,j)) {
+				return i * 4 + j + 1;
+			}
+		}
+		
+	}
+	return 0;
+	
+}
+
+// Maps int k to keypad character
+// Writes keypad character into buf (max 2 characters)
+void keypadIntToString(char *buf, int k) {
+	switch(k) {
+		case 1:
+		sprintf(buf, "%2d", 1);
+		break;
+		case 2:
+		sprintf(buf, "%2d", 2);
+		break;
+		case 3:
+		sprintf(buf, "%2d", 3);
+		break;
+		case 4:
+		sprintf(buf, "A");
+		break;
+		case 5:
+		sprintf(buf, "%2d", 4);
+		break;
+		case 6:
+		sprintf(buf, "%2d", 5);
+		break;
+		case 7:
+		sprintf(buf, "%2d", 6);
+		break;
+		case 8:
+		sprintf(buf, "B");
+		break;
+		case 9:
+		sprintf(buf, "%2d", 7);
+		break;
+		case 10:
+		sprintf(buf, "%2d", 8);
+		break;
+		case 11:
+		sprintf(buf, "%2d", 9);
+		break;
+		case 12:
+		sprintf(buf, "C");
+		break;
+		case 13:
+		sprintf(buf, "*");
+		break;
+		case 14:
+		sprintf(buf, "%2d", 0);
+		break;
+		case 15:
+		sprintf(buf, "%2d", 15);
+		break;
+		case 16:
+		sprintf(buf, "D");
+		break;
+		default:
+		sprintf(buf, "EE");
+		break;
+	}
+}
+
+// Returns true if the buf (max len of 2) only contains numbers
+// returns false otherwise
+bool isNumberPressed(const char *buf) {
+	return (strlen(buf) == 2 && isdigit(buf[1])) || (strlen(buf) == 1 && isdigit(buf[0]));
 }

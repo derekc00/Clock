@@ -136,6 +136,12 @@
     <Compile Include="avr.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="dt.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="dt.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="lcd.c">
       <SubType>compile</SubType>
     </Compile>

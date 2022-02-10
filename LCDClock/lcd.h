@@ -7,6 +7,8 @@
 
 #ifndef _LCD_H
 #define _LCD_H
+#include <stdbool.h>
+#include <string.h>
 
 void lcd_init(void);
 
@@ -20,4 +22,11 @@ void lcd_puts1(const char *s);
 
 void lcd_puts2(const char *s);
 
+int is_pressed(int r, int c);
+
+int get_key();
+
+void keypadIntToString(char *buf, int k);
+
+bool isNumberPressed(const char *buf);
 #endif /* _LCD_H */
